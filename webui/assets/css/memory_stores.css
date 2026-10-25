@@ -1,0 +1,319 @@
+/*
+ * memory-folders — memory folder sidebar panel styles
+ * Copyright (C) 2026 theunknownmuncher <theunknownmuncher@protonmail.com>
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+/* -- AI GENERATED CODE (Qwen3.8 Flash Next) :: (2026-10-24)
+   memory store sidebar panel styles. Kept module-scoped (.mstore-*) so the
+   core sidebar and the memory panel keep their own styling untouched. */
+
+.mstore-panel {
+    padding: 7px;
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    gap: var(--gap, 6px);
+}
+
+.mstore-panel .mstore-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 4px;
+}
+
+.mstore-panel .mstore-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary, #999);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.mstore-panel .mstore-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    color: var(--text-secondary, #999);
+    cursor: pointer;
+}
+
+.mstore-panel .mstore-icon-btn:hover {
+    background: var(--bg-secondary, rgba(255, 255, 255, 0.06));
+    color: var(--text-primary, #eee);
+}
+
+.mstore-panel .mstore-icon-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.mstore-panel .mstore-active {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 2px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: var(--bg-secondary, rgba(255, 255, 255, 0.05));
+    font-size: 12px;
+    min-width: 0;
+}
+
+.mstore-panel .mstore-active-label {
+    color: var(--text-secondary, #999);
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+}
+
+.mstore-panel .mstore-active-path {
+    font-weight: 600;
+    color: var(--text-primary, #eee);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mstore-panel .mstore-active .mstore-count {
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.mstore-panel .mstore-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 2px 4px 0;
+}
+
+.mstore-panel .mstore-empty {
+    padding: 10px 6px;
+    font-size: 12px;
+    color: var(--text-secondary, #999);
+}
+
+.mstore-panel .mstore-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 6px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-size: 12px;
+    min-width: 0;
+}
+
+.mstore-panel .mstore-row:hover {
+    background: var(--bg-secondary, rgba(255, 255, 255, 0.05));
+}
+
+.mstore-panel .mstore-row.active {
+    border-color: var(--accent-color, rgba(120, 180, 255, 0.4));
+    background: var(--bg-secondary, rgba(255, 255, 255, 0.05));
+}
+
+.mstore-panel .mstore-folder {
+    display: flex;
+    color: var(--text-secondary, #999);
+    flex-shrink: 0;
+}
+
+.mstore-panel .mstore-folder svg {
+    width: 14px;
+    height: 14px;
+}
+
+.mstore-panel .mstore-name {
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 12px;
+    color: var(--text-primary, #eee);
+    cursor: pointer;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mstore-panel .mstore-name:hover {
+    text-decoration: underline;
+}
+
+.mstore-panel .mstore-count {
+    font-size: 10px;
+    color: var(--text-secondary, #999);
+    flex-shrink: 0;
+}
+
+.mstore-panel .mstore-badge {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1px 5px;
+    border-radius: 999px;
+    background: var(--accent-color, rgba(120, 180, 255, 0.35));
+    color: var(--bg-primary, #fff);
+    flex-shrink: 0;
+}
+
+.mstore-panel .mstore-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: auto;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+}
+
+.mstore-panel .mstore-row:hover .mstore-actions,
+.mstore-panel .mstore-row:focus-within .mstore-actions {
+    opacity: 1;
+}
+
+.mstore-panel .mstore-action {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--text-secondary, #999);
+    padding: 3px;
+    border-radius: 5px;
+}
+
+.mstore-panel .mstore-action:hover {
+    background: var(--bg-secondary, rgba(255, 255, 255, 0.08));
+    color: var(--text-primary, #eee);
+}
+
+.mstore-panel .mstore-action.danger:hover {
+    color: var(--danger-color, #e57373);
+}
+
+.mstore-panel .mstore-action svg {
+    width: 13px;
+    height: 13px;
+    display: block;
+}
+
+.mstore-panel .mstore-footer {
+    font-size: 11px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    word-break: break-word;
+    max-height: 90px;
+    overflow-y: auto;
+}
+
+.mstore-panel .mstore-footer.error {
+    color: var(--danger-color, #e57373);
+    background: rgba(229, 115, 115, 0.08);
+}
+
+.mstore-panel .mstore-footer.notice {
+    color: var(--text-secondary, #999);
+}
+
+/* new store modal (templates/modals/memory_store_create.html) */
+
+.memory-store-create-modal {
+    max-width: 420px;
+}
+
+.memory-store-create-modal .mstore-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap, 8px);
+    padding: 12px 14px 14px;
+}
+
+.memory-store-create-modal .mstore-modal-parent {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-secondary, #999);
+}
+
+.memory-store-create-modal .mstore-modal-parent strong {
+    color: var(--text-primary, #eee);
+}
+
+.memory-store-create-modal .mstore-modal-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary, #999);
+}
+
+.memory-store-create-modal .mstore-modal-input {
+    font-size: 13px;
+    padding: 7px 9px;
+    border-radius: 7px;
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+    background: var(--bg-primary, rgba(0, 0, 0, 0.25));
+    color: var(--text-primary, #eee);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.memory-store-create-modal .mstore-modal-input:focus {
+    outline: none;
+    border-color: var(--accent-color, rgba(120, 180, 255, 0.6));
+}
+
+.memory-store-create-modal .mstore-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.memory-store-create-modal .mstore-modal-btn {
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 7px;
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+    background: var(--bg-secondary, rgba(255, 255, 255, 0.06));
+    color: var(--text-primary, #eee);
+    cursor: pointer;
+}
+
+.memory-store-create-modal .mstore-modal-btn:hover:not(:disabled) {
+    background: var(--bg-secondary, rgba(255, 255, 255, 0.12));
+}
+
+.memory-store-create-modal .mstore-modal-btn.primary {
+    background: var(--accent-color, #6ea8fe);
+    border-color: transparent;
+    color: var(--bg-primary, #fff);
+    font-weight: 600;
+}
+
+.memory-store-create-modal .mstore-modal-btn.primary:hover:not(:disabled) {
+    filter: brightness(1.1);
+}
+
+.memory-store-create-modal .mstore-modal-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.memory-store-create-modal .mstore-modal-error {
+    font-size: 11px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    word-break: break-word;
+    color: var(--danger-color, #e57373);
+    background: rgba(229, 115, 115, 0.08);
+}

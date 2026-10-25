@@ -1,0 +1,46 @@
+{# memory-folders — WebUI template
+   Copyright (C) 2026 theunknownmuncher <theunknownmuncher@protonmail.com>
+   SPDX-License-Identifier: GPL-3.0-or-later #}
+
+{# -- AI GENERATED CODE (Qwen3.8 Flash Next) :: (2026-10-24)
+   new memory store modal. Auto-discovered from templates/modals/. Shares the
+   memoryStores Alpine store with the sidebar tab: creatingParent is the store
+   the user clicked "+" on. #}
+<template x-if="$store.ui.currentModal === 'memory_store_create' && $store.memoryStores" x-cloak>
+    <div class="modal memory-store-create-modal" @keydown.escape.window="$store.memoryStores.cancelCreate()">
+        <div class="header">
+            <h2>New memory store</h2>
+            <button class="close" @click="$store.memoryStores.cancelCreate()" aria-label="Close new store dialog">&times;</button>
+        </div>
+
+        <div class="mstore-modal-body">
+            <p class="mstore-modal-parent">inside <strong x-text="$store.memoryStores.creatingParent"></strong></p>
+
+            <label class="mstore-modal-label" for="mstore-new-name">name</label>
+            <input
+                id="mstore-new-name"
+                class="mstore-modal-input"
+                placeholder="e.g. work"
+                autocomplete="off"
+                x-model="$store.memoryStores.newName"
+                @keydown.enter.prevent="$store.memoryStores.create()"
+                x-init="$nextTick(() => $el.focus())"
+            >
+
+            <div class="mstore-modal-actions">
+                <button type="button" class="mstore-modal-btn" @click="$store.memoryStores.cancelCreate()">
+                    cancel
+                </button>
+                <button
+                    type="button"
+                    class="mstore-modal-btn primary"
+                    :disabled="$store.memoryStores.creating || !$store.memoryStores.newName.trim()"
+                    @click="$store.memoryStores.create()"
+                    x-text="$store.memoryStores.creating ? 'creating..' : 'create'"
+                ></button>
+            </div>
+
+            <div class="mstore-modal-error" x-show="$store.memoryStores.error" x-text="$store.memoryStores.error"></div>
+        </div>
+    </div>
+</template>
