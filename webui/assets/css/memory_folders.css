@@ -5,10 +5,10 @@
  */
 
 /* -- AI GENERATED CODE (Qwen3.8 Flash Next) :: (2026-10-24)
-   memory store sidebar panel styles. Kept module-scoped (.mstore-*) so the
+   memory folder sidebar panel styles. Kept module-scoped (.mfolder-*) so the
    core sidebar and the memory panel keep their own styling untouched. */
 
-.mstore-panel {
+.mfolder-panel {
     padding: 7px;
     flex: 1;
     min-width: 0;
@@ -20,14 +20,14 @@
     gap: var(--gap, 6px);
 }
 
-.mstore-panel .mstore-header {
+.mfolder-panel .mfolder-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 2px 4px;
 }
 
-.mstore-panel .mstore-title {
+.mfolder-panel .mfolder-title {
     font-size: 13px;
     font-weight: 600;
     color: var(--text-secondary, #999);
@@ -35,7 +35,7 @@
     letter-spacing: 0.04em;
 }
 
-.mstore-panel .mstore-icon-btn {
+.mfolder-panel .mfolder-icon-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -48,17 +48,17 @@
     cursor: pointer;
 }
 
-.mstore-panel .mstore-icon-btn:hover {
+.mfolder-panel .mfolder-icon-btn:hover {
     background: var(--bg-secondary, rgba(255, 255, 255, 0.06));
     color: var(--text-primary, #eee);
 }
 
-.mstore-panel .mstore-icon-btn svg {
+.mfolder-panel .mfolder-icon-btn svg {
     width: 16px;
     height: 16px;
 }
 
-.mstore-panel .mstore-active {
+.mfolder-panel .mfolder-active {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -70,14 +70,14 @@
     min-width: 0;
 }
 
-.mstore-panel .mstore-active-label {
+.mfolder-panel .mfolder-active-label {
     color: var(--text-secondary, #999);
     text-transform: uppercase;
     font-size: 10px;
     letter-spacing: 0.05em;
 }
 
-.mstore-panel .mstore-active-path {
+.mfolder-panel .mfolder-active-path {
     font-weight: 600;
     color: var(--text-primary, #eee);
     overflow: hidden;
@@ -85,12 +85,12 @@
     white-space: nowrap;
 }
 
-.mstore-panel .mstore-active .mstore-count {
+.mfolder-panel .mfolder-active .mfolder-count {
     margin-left: auto;
     flex-shrink: 0;
 }
 
-.mstore-panel .mstore-list {
+.mfolder-panel .mfolder-list {
     flex: 1;
     overflow-y: auto;
     display: flex;
@@ -99,13 +99,13 @@
     padding: 0 2px 4px 0;
 }
 
-.mstore-panel .mstore-empty {
+.mfolder-panel .mfolder-empty {
     padding: 10px 6px;
     font-size: 12px;
     color: var(--text-secondary, #999);
 }
 
-.mstore-panel .mstore-row {
+.mfolder-panel .mfolder-row {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -116,27 +116,27 @@
     min-width: 0;
 }
 
-.mstore-panel .mstore-row:hover {
+.mfolder-panel .mfolder-row:hover {
     background: var(--bg-secondary, rgba(255, 255, 255, 0.05));
 }
 
-.mstore-panel .mstore-row.active {
+.mfolder-panel .mfolder-row.active {
     border-color: var(--accent-color, rgba(120, 180, 255, 0.4));
     background: var(--bg-secondary, rgba(255, 255, 255, 0.05));
 }
 
-.mstore-panel .mstore-folder {
+.mfolder-panel .mfolder-folder {
     display: flex;
     color: var(--text-secondary, #999);
     flex-shrink: 0;
 }
 
-.mstore-panel .mstore-folder svg {
+.mfolder-panel .mfolder-folder svg {
     width: 14px;
     height: 14px;
 }
 
-.mstore-panel .mstore-name {
+.mfolder-panel .mfolder-name {
     border: none;
     background: none;
     padding: 0;
@@ -149,17 +149,17 @@
     white-space: nowrap;
 }
 
-.mstore-panel .mstore-name:hover {
+.mfolder-panel .mfolder-name:hover {
     text-decoration: underline;
 }
 
-.mstore-panel .mstore-count {
+.mfolder-panel .mfolder-count {
     font-size: 10px;
     color: var(--text-secondary, #999);
     flex-shrink: 0;
 }
 
-.mstore-panel .mstore-badge {
+.mfolder-panel .mfolder-badge {
     font-size: 9px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -170,7 +170,7 @@
     flex-shrink: 0;
 }
 
-.mstore-panel .mstore-actions {
+.mfolder-panel .mfolder-actions {
     display: flex;
     align-items: center;
     gap: 2px;
@@ -179,12 +179,12 @@
     transition: opacity 0.12s ease;
 }
 
-.mstore-panel .mstore-row:hover .mstore-actions,
-.mstore-panel .mstore-row:focus-within .mstore-actions {
+.mfolder-panel .mfolder-row:hover .mfolder-actions,
+.mfolder-panel .mfolder-row:focus-within .mfolder-actions {
     opacity: 1;
 }
 
-.mstore-panel .mstore-action {
+.mfolder-panel .mfolder-action {
     border: none;
     background: none;
     cursor: pointer;
@@ -193,22 +193,22 @@
     border-radius: 5px;
 }
 
-.mstore-panel .mstore-action:hover {
+.mfolder-panel .mfolder-action:hover {
     background: var(--bg-secondary, rgba(255, 255, 255, 0.08));
     color: var(--text-primary, #eee);
 }
 
-.mstore-panel .mstore-action.danger:hover {
+.mfolder-panel .mfolder-action.danger:hover {
     color: var(--danger-color, #e57373);
 }
 
-.mstore-panel .mstore-action svg {
+.mfolder-panel .mfolder-action svg {
     width: 13px;
     height: 13px;
     display: block;
 }
 
-.mstore-panel .mstore-footer {
+.mfolder-panel .mfolder-footer {
     font-size: 11px;
     padding: 4px 6px;
     border-radius: 6px;
@@ -217,46 +217,46 @@
     overflow-y: auto;
 }
 
-.mstore-panel .mstore-footer.error {
+.mfolder-panel .mfolder-footer.error {
     color: var(--danger-color, #e57373);
     background: rgba(229, 115, 115, 0.08);
 }
 
-.mstore-panel .mstore-footer.notice {
+.mfolder-panel .mfolder-footer.notice {
     color: var(--text-secondary, #999);
 }
 
-/* new store modal (templates/modals/memory_store_create.html) */
+/* new folder modal (templates/modals/memory_folder_create.html) */
 
-.memory-store-create-modal {
+.memory-folder-create-modal {
     max-width: 420px;
 }
 
-.memory-store-create-modal .mstore-modal-body {
+.memory-folder-create-modal .mfolder-modal-body {
     display: flex;
     flex-direction: column;
     gap: var(--gap, 8px);
     padding: 12px 14px 14px;
 }
 
-.memory-store-create-modal .mstore-modal-parent {
+.memory-folder-create-modal .mfolder-modal-parent {
     margin: 0;
     font-size: 12px;
     color: var(--text-secondary, #999);
 }
 
-.memory-store-create-modal .mstore-modal-parent strong {
+.memory-folder-create-modal .mfolder-modal-parent strong {
     color: var(--text-primary, #eee);
 }
 
-.memory-store-create-modal .mstore-modal-label {
+.memory-folder-create-modal .mfolder-modal-label {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--text-secondary, #999);
 }
 
-.memory-store-create-modal .mstore-modal-input {
+.memory-folder-create-modal .mfolder-modal-input {
     font-size: 13px;
     padding: 7px 9px;
     border-radius: 7px;
@@ -267,19 +267,19 @@
     box-sizing: border-box;
 }
 
-.memory-store-create-modal .mstore-modal-input:focus {
+.memory-folder-create-modal .mfolder-modal-input:focus {
     outline: none;
     border-color: var(--accent-color, rgba(120, 180, 255, 0.6));
 }
 
-.memory-store-create-modal .mstore-modal-actions {
+.memory-folder-create-modal .mfolder-modal-actions {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
     margin-top: 4px;
 }
 
-.memory-store-create-modal .mstore-modal-btn {
+.memory-folder-create-modal .mfolder-modal-btn {
     font-size: 12px;
     padding: 6px 14px;
     border-radius: 7px;
@@ -289,27 +289,27 @@
     cursor: pointer;
 }
 
-.memory-store-create-modal .mstore-modal-btn:hover:not(:disabled) {
+.memory-folder-create-modal .mfolder-modal-btn:hover:not(:disabled) {
     background: var(--bg-secondary, rgba(255, 255, 255, 0.12));
 }
 
-.memory-store-create-modal .mstore-modal-btn.primary {
+.memory-folder-create-modal .mfolder-modal-btn.primary {
     background: var(--accent-color, #6ea8fe);
     border-color: transparent;
     color: var(--bg-primary, #fff);
     font-weight: 600;
 }
 
-.memory-store-create-modal .mstore-modal-btn.primary:hover:not(:disabled) {
+.memory-folder-create-modal .mfolder-modal-btn.primary:hover:not(:disabled) {
     filter: brightness(1.1);
 }
 
-.memory-store-create-modal .mstore-modal-btn:disabled {
+.memory-folder-create-modal .mfolder-modal-btn:disabled {
     opacity: 0.5;
     cursor: default;
 }
 
-.memory-store-create-modal .mstore-modal-error {
+.memory-folder-create-modal .mfolder-modal-error {
     font-size: 11px;
     padding: 5px 8px;
     border-radius: 6px;

@@ -1,0 +1,59 @@
+{# memory-folders — WebUI template
+   Copyright (C) 2026 theunknownmuncher <theunknownmuncher@protonmail.com>
+   SPDX-License-Identifier: GPL-3.0-or-later #}
+
+{# -- AI GENERATED CODE (Qwen3.8 Flash Next) :: (2026-10-24)
+   memory folder sidebar tab: discovered via the sidebars/ convention.
+   logic lives in assets/js/memory_folders.js (MEMORY_FOLDERS_PANEL global). #}
+<div class="mfolder-panel" x-data="memoryFoldersComponent()" x-intersect.enter="refresh()">
+
+    <div class="mfolder-header">
+        <span class="mfolder-title">Memory Folders</span>
+        <button type="button" class="mfolder-icon-btn" title="Refresh memory folders" @click="refresh()">
+            {% include 'svg/reload.svg' %}
+        </button>
+    </div>
+
+    <div class="mfolder-active">
+        <span class="mfolder-active-label">active</span>
+        <span class="mfolder-active-path" x-text="active"></span>
+        <span class="mfolder-count" x-text="totalActive + ' memories'"></span>
+    </div>
+
+    <div class="mfolder-list">
+        <template x-if="loading && folders.length === 0">
+            <div class="mfolder-empty">loading folders..</div>
+        </template>
+
+        <template x-if="!loading && folders.length === 0">
+            <div class="mfolder-empty">no memory folders found</div>
+        </template>
+
+        <template x-for="f in folders" :key="f.path">
+            <div class="mfolder-row" :class="{ active: f.active }" :style="indent(f)">
+                <span class="mfolder-folder">{% include 'svg/folder.svg' %}</span>
+                <button
+                    type="button"
+                    class="mfolder-name"
+                    :title="'Activate ' + f.path"
+                    @click="activate(f.path)"
+                    x-text="f.name"
+                ></button>
+                <span class="mfolder-count" x-show="f.subtree !== f.own" x-text="'Σ ' + f.subtree" title="memories including sub-folders"></span>
+                <span class="mfolder-count" x-text="f.own" title="memories in this folder"></span>
+                <span class="mfolder-badge" x-show="f.active">active</span>
+                <div class="mfolder-actions">
+                    <button type="button" class="mfolder-action icon" title="New sub-folder inside this one" @click="openCreate(f)">
+                        {% include 'svg/add.svg' %}
+                    </button>
+                    <button type="button" class="mfolder-action icon danger" title="Delete this folder and its sub-folders" x-show="f.path !== 'root'" @click="remove(f)">
+                        {% include 'svg/trash.svg' %}
+                    </button>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <div class="mfolder-footer notice" x-show="notice" x-text="notice"></div>
+    <div class="mfolder-footer error" x-show="error" x-text="error"></div>
+</div>

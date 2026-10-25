@@ -1,0 +1,46 @@
+{# memory-folders — WebUI template
+   Copyright (C) 2026 theunknownmuncher <theunknownmuncher@protonmail.com>
+   SPDX-License-Identifier: GPL-3.0-or-later #}
+
+{# -- AI GENERATED CODE (Qwen3.8 Flash Next) :: (2026-10-24)
+   new memory folder modal. Auto-discovered from templates/modals/. Shares the
+   memoryFolders Alpine state with the sidebar tab: creatingParent is the folder
+   the user clicked "+" on. #}
+<template x-if="$store.ui.currentModal === 'memory_folder_create' && $store.memoryFolders" x-cloak>
+    <div class="modal memory-folder-create-modal" @keydown.escape.window="$store.memoryFolders.cancelCreate()">
+        <div class="header">
+            <h2>New memory folder</h2>
+            <button class="close" @click="$store.memoryFolders.cancelCreate()" aria-label="Close new folder dialog">&times;</button>
+        </div>
+
+        <div class="mfolder-modal-body">
+            <p class="mfolder-modal-parent">inside <strong x-text="$store.memoryFolders.creatingParent"></strong></p>
+
+            <label class="mfolder-modal-label" for="mfolder-new-name">name</label>
+            <input
+                id="mfolder-new-name"
+                class="mfolder-modal-input"
+                placeholder="e.g. work"
+                autocomplete="off"
+                x-model="$store.memoryFolders.newName"
+                @keydown.enter.prevent="$store.memoryFolders.create()"
+                x-init="$nextTick(() => $el.focus())"
+            >
+
+            <div class="mfolder-modal-actions">
+                <button type="button" class="mfolder-modal-btn" @click="$store.memoryFolders.cancelCreate()">
+                    cancel
+                </button>
+                <button
+                    type="button"
+                    class="mfolder-modal-btn primary"
+                    :disabled="$store.memoryFolders.creating || !$store.memoryFolders.newName.trim()"
+                    @click="$store.memoryFolders.create()"
+                    x-text="$store.memoryFolders.creating ? 'creating..' : 'create'"
+                ></button>
+            </div>
+
+            <div class="mfolder-modal-error" x-show="$store.memoryFolders.error" x-text="$store.memoryFolders.error"></div>
+        </div>
+    </div>
+</template>

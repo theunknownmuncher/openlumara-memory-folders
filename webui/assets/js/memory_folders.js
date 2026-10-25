@@ -5,11 +5,11 @@
  */
 
 /* -- AI GENERATED CODE (Qwen3.8 Flash Next) :: (2026-10-24)
-   memory store sidebar panel logic. The plain global object is registered as
-   the Alpine store memoryStores, used by the sidebar tab through
-   memoryStoresComponent(). Talks to /api/ext/memory-folders/. */
-const MEMORY_STORES_PANEL = {
-    stores: [],
+   memory folder sidebar panel logic. The plain global object is registered as
+   the Alpine state memoryFolders, used by the sidebar tab through
+   memoryFoldersComponent(). Talks to /api/ext/memory-folders/. */
+const MEMORY_FOLDERS_PANEL = {
+    folders: [],
     active: "",
     totalActive: 0,
     loading: false,
@@ -26,7 +26,7 @@ const MEMORY_STORES_PANEL = {
 
         try {
             const data = await simpleApiFetch("/api/ext/memory-folders/tree") || {};
-            this.stores = data.stores || [];
+            this.folders = data.folders || [];
             this.active = data.active || "";
             this.totalActive = data.total_active || 0;
             this.loaded = true;
@@ -46,21 +46,21 @@ const MEMORY_STORES_PANEL = {
         this.notice = "";
 
         try {
-            const msg = await simpleApiPost("/api/ext/memory-folders/activate", { path });
-            this.notice = typeof msg === "string" ? msg.split("\n")[0] : "store activated";
+            await simpleApiPost("/api/ext/memory-folders/activate", { path });
             await this.refresh();
+            this.notice = `activated '${path}' — ${this.totalActive} memories`;
             this.refreshMemoryPanel();
         } catch (e) {
             this.error = this.errorText(e);
         }
     },
 
-    openCreate(store) {
-        this.creatingParent = store.path;
+    openCreate(folder) {
+        this.creatingParent = folder.path;
         this.newName = "";
         this.error = "";
         this.notice = "";
-        Alpine.store("ui").openModal("memory_store_create");
+        Alpine.store("ui").openModal("memory_folder_create");
     },
 
     cancelCreate() {
@@ -72,7 +72,7 @@ const MEMORY_STORES_PANEL = {
     async create() {
         const name = this.newName.trim();
         if (!name) {
-            this.error = "give the new store a name first";
+            this.error = "give the new folder a name first";
             return;
         }
 
@@ -81,11 +81,11 @@ const MEMORY_STORES_PANEL = {
         this.notice = "";
 
         try {
-            const msg = await simpleApiPost("/api/ext/memory-folders/create", { parent: this.creatingParent, name });
-            this.notice = typeof msg === "string" ? msg.split("\n")[0] : "store created";
+            await simpleApiPost("/api/ext/memory-folders/create", { parent: this.creatingParent, name });
             this.newName = "";
             await this.refresh();
             Alpine.store("ui").closeModal();
+            this.notice = `created folder '${this.creatingParent}/${name}'`;
         } catch (e) {
             this.error = this.errorText(e);
         } finally {
@@ -93,14 +93,14 @@ const MEMORY_STORES_PANEL = {
         }
     },
 
-    async remove(store) {
-        if (store.path === "root") {
+    async remove(folder) {
+        if (folder.path === "root") {
             return;
         }
 
-        const warning = store.subtree > 0
-            ? `Delete memory store '${store.path}' and its ${store.subtree} memories (including sub-stores)?\n\nThis cannot be undone.`
-            : `Delete memory store '${store.path}'?\n\nThis cannot be undone.`;
+        const warning = folder.subtree > 0
+            ? `Delete memory folder '${folder.path}' and its ${folder.subtree} memories (including sub-folders)?\n\nThis cannot be undone.`
+            : `Delete memory folder '${folder.path}'?\n\nThis cannot be undone.`;
 
         if (!window.confirm(warning)) {
             return;
@@ -110,22 +110,21 @@ const MEMORY_STORES_PANEL = {
         this.notice = "";
 
         try {
-            await simpleApiPost("/api/ext/memory-folders/delete", { path: store.path, force: false });
-            this.notice = `deleted '${store.path}'`;
+            await simpleApiPost("/api/ext/memory-folders/delete", { path: folder.path, force: false });
+            this.notice = `deleted '${folder.path}'`;
             await this.refresh();
             this.refreshMemoryPanel();
         } catch (e) {
             const text = this.errorText(e);
 
-            // the backend refuses non-empty stores without force — offer a second, explicit
-            // confirmation. "Pass force=True to delete anyway." is guidance for the AI tool,
-            // so it is stripped from the human-facing dialog.
+            // The backend refuses non-empty folders without force. That sentence
+            // is tool guidance, so strip it from the human-facing second dialog.
             if (text.startsWith("refusing to delete")) {
                 const friendly = text.replace(/\s*Pass force=True to delete anyway\.?/, "");
                 if (window.confirm(friendly + "\n\nDelete anyway?")) {
                     try {
-                        await simpleApiPost("/api/ext/memory-folders/delete", { path: store.path, force: true });
-                        this.notice = `deleted '${store.path}'`;
+                        await simpleApiPost("/api/ext/memory-folders/delete", { path: folder.path, force: true });
+                        this.notice = `deleted '${folder.path}'`;
                         await this.refresh();
                         this.refreshMemoryPanel();
                     } catch (e2) {
@@ -140,8 +139,8 @@ const MEMORY_STORES_PANEL = {
 
     refreshMemoryPanel() {
         // the memory panel caches pinned/tags/search results; force a reload so
-        // switching stores immediately shows the new store's memories. resetting
-        // loadedTags re-fetches the tag list too (tags differ per store).
+        // switching folders immediately shows the new folder's memories. resetting
+        // loadedTags re-fetches the tag list too (tags differ per folder).
         try {
             const panel =
                 (window.Alpine && Alpine.store("memoryPanel")) ||
@@ -152,14 +151,14 @@ const MEMORY_STORES_PANEL = {
                 panel.refresh(true);
             }
 
-            window.dispatchEvent(new CustomEvent("memory-stores-changed"));
+            window.dispatchEvent(new CustomEvent("memory-folders-changed"));
         } catch (e) {
             // memory panel extension not loaded (memory module or its webui extension disabled)
         }
     },
 
-    indent(store) {
-        return { paddingLeft: (6 + store.depth * 14) + "px" };
+    indent(folder) {
+        return { paddingLeft: (6 + folder.depth * 14) + "px" };
     },
 
     errorText(e) {
@@ -171,9 +170,9 @@ const MEMORY_STORES_PANEL = {
 };
 
 document.addEventListener("alpine:init", () => {
-    Alpine.store("memoryStores", MEMORY_STORES_PANEL);
+    Alpine.store("memoryFolders", MEMORY_FOLDERS_PANEL);
 });
 
-function memoryStoresComponent() {
-    return Alpine.store("memoryStores") || MEMORY_STORES_PANEL;
+function memoryFoldersComponent() {
+    return Alpine.store("memoryFolders") || MEMORY_FOLDERS_PANEL;
 }
