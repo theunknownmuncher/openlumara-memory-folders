@@ -244,6 +244,7 @@ class MemoryFolders(core.module.Module):
     #   AI TOOLS
     # -------------------------
 
+    @core.module.tool
     async def list_folders(self):
         """Lists every memory folder directory as a tree, with memory counts and the active folder marked.
 
@@ -269,6 +270,7 @@ class MemoryFolders(core.module.Module):
 
         return self.result("\n".join(lines))
 
+    @core.module.tool
     async def create_folder(self, parent: str, name: str):
         """Creates a new memory folder directory inside an existing memory folder.
 
@@ -303,6 +305,7 @@ class MemoryFolders(core.module.Module):
         new_path = "/".join(parts + [name])
         return self.result(f"created memory folder '{new_path}' (empty). Activate it with activate_folder('{new_path}') to start saving memories to it.")
 
+    @core.module.tool
     async def activate_folder(self, path: str):
         """Switches which memory folder is active. All memories of that folder and of every folder nested inside it become active and available; new memories are saved into the activated folder itself.
 
@@ -326,6 +329,7 @@ class MemoryFolders(core.module.Module):
         breakdown = self._view.breakdown()
         return self.result(f"active memory folder: '{active}' — {total} memories active:\n{breakdown}")
 
+    @core.module.tool
     async def delete_folder(self, path: str, force: bool = False):
         """Deletes a memory folder directory and every folder nested inside it. DANGEROUS: memories are removed from disk.
 
