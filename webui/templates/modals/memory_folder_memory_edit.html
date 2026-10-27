@@ -1,0 +1,62 @@
+{# memory-folders — WebUI template
+   Copyright (C) 2026 theunknownmuncher <theunknownmuncher@protonmail.com>
+   SPDX-License-Identifier: GPL-3.0-or-later #}
+
+{# -- AI GENERATED CODE (Qwen3.8 Flash Next) :: (2026-10-27)
+   memory edit modal for the memory browser in the memory folders panel.
+   Auto-discovered from templates/modals/. Shares the memoryFolders Alpine
+   state with the sidebar tab: editId points at the memory being edited,
+   which lives in the folder currently being browsed (memPath). #}
+<template x-if="$store.ui.currentModal === 'memory_folder_memory_edit' && $store.memoryFolders && $store.memoryFolders.editId" x-cloak>
+    <div class="modal memory-folder-create-modal memory-folder-edit-modal" @keydown.escape.window="$store.memoryFolders.closeEdit()">
+        <div class="header">
+            <h2>Edit memory</h2>
+            <button class="close" @click="$store.memoryFolders.closeEdit()" aria-label="Close memory editor">&times;</button>
+        </div>
+
+        <div class="mfolder-modal-body">
+            <p class="mfolder-modal-parent">in folder <strong x-text="$store.memoryFolders.memPath"></strong></p>
+
+            <label class="mfolder-modal-label" for="mfolder-edit-content">content</label>
+            <textarea
+                id="mfolder-edit-content"
+                class="mfolder-modal-input mfolder-modal-textarea"
+                rows="8"
+                x-model="$store.memoryFolders.editContent"
+                @keydown.ctrl.enter.prevent="$store.memoryFolders.saveEdit()"
+                @keydown.meta.enter.prevent="$store.memoryFolders.saveEdit()"
+                x-init="$nextTick(() => $el.focus())"
+            ></textarea>
+
+            <label class="mfolder-modal-label" for="mfolder-edit-tags">tags</label>
+            <input
+                id="mfolder-edit-tags"
+                class="mfolder-modal-input"
+                placeholder="comma, separated, tags"
+                autocomplete="off"
+                x-model="$store.memoryFolders.editTags"
+                @keydown.enter.prevent="$store.memoryFolders.saveEdit()"
+            >
+
+            <label class="mfolder-modal-check">
+                <input type="checkbox" x-model="$store.memoryFolders.editPinned">
+                <span>pinned (kept at the top of the AI's context)</span>
+            </label>
+
+            <div class="mfolder-modal-actions">
+                <button type="button" class="mfolder-modal-btn" @click="$store.memoryFolders.closeEdit()">
+                    cancel
+                </button>
+                <button
+                    type="button"
+                    class="mfolder-modal-btn primary"
+                    :disabled="$store.memoryFolders.savingEdit || !$store.memoryFolders.editContent.trim()"
+                    @click="$store.memoryFolders.saveEdit()"
+                    x-text="$store.memoryFolders.savingEdit ? 'saving..' : 'save'"
+                ></button>
+            </div>
+
+            <div class="mfolder-modal-error" x-show="$store.memoryFolders.error" x-text="$store.memoryFolders.error"></div>
+        </div>
+    </div>
+</template>

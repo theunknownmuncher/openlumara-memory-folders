@@ -67,17 +67,24 @@ startup.
 ## WebUI
 
 With the WebUI channel enabled, the module ships a **Memory Folders** sidebar tab
-(next to the memory panel tab):
+(next to the memory panel tab) that works like a small filesystem GUI:
 
 - the folder tree with per-folder memory counts (own / subtree), active folder
-  highlighted
-- one-click activation by clicking a folder name
-- creation via the "+" button on the intended parent folder's row, which opens a
-  compact modal with a name input and Cancel/Create buttons
-- delete buttons with confirmation, plus a second confirmation when the folder
-  still contains memories
-- activating or deleting from this tab also force-refreshes the memory panel
-  (memories, tags and search results), so the two tabs never disagree
+  highlighted — it doubles as the directory pane
+- clicking a folder browses it: the browser below lists that folder's **own**
+  memories (like files in a directory), with a per-folder filter box
+- each memory card can be **edited** (modal with content, tags and pinned
+  checkbox), **deleted** (with confirmation), **copied** or **cut** to a
+  filesystem-style clipboard
+- pasting the clipboard into any folder ("paste here" button or the paste
+  button on a folder row) **duplicates** a copied memory (fresh id) or
+  **moves** a cut one between folders — even folders outside the active subtree
+- a checkmark button sets the active folder; "+" on a folder row opens a
+  compact new-sub-folder modal; delete asks for confirmation, with a second
+  one when the folder still contains memories
+- editing, deleting, copying or moving from this tab also force-refreshes the
+  memory panel (memories, tags and search results), so the two tabs never
+  disagree
 
 Switches made from chat (tools or `/memory-folder`) are not pushed to the browser;
 the memory panel picks them up on its own refresh. The whole extension can be
@@ -98,6 +105,7 @@ module.py                                  <- module + /api/ext/memory-folders r
 webui/templates/sidebars/memory_folders.html   <- sidebar tab (tab label comes from this filename)
 webui/templates/sidebars/memory_folders.svg    <- tab icon
 webui/templates/modals/memory_folder_create.html <- new-folder modal
+webui/templates/modals/memory_folder_memory_edit.html <- memory edit modal
 webui/assets/js/memory_folders.js           <- tab logic (Alpine state "memoryFolders")
 webui/assets/css/memory_folders.css         <- tab + modal styles
 LICENSE                                    <- GPL-3.0-or-later
@@ -117,10 +125,11 @@ README.md                                  <- this file
 
 ## Notes
 
-- Deleted memories (`memory_delete`) still go to the memory module's global
-  `deleted_memories` trash — it is not split per folder.
+- Deleted memories (`memory_delete`, and deletes from the WebUI browser) still go
+  to the memory module's global `deleted_memories` trash — it is not split per
+  folder.
 - In `--tmp` mode the folder tree is read but nothing is written to disk, and
-  creating/deleting folders is disabled.
+  creating/deleting folders or editing memories is disabled.
 - WebUI template changes are picked up at startup or after a settings save;
   JS/CSS changes only need a browser reload (hard-reload if cached).
 

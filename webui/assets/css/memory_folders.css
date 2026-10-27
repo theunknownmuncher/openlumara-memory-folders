@@ -118,6 +118,11 @@
 
 .mfolder-panel .mfolder-row:hover {
     background: var(--bg-secondary, rgba(255, 255, 255, 0.05));
+    cursor: pointer;
+}
+
+.mfolder-panel .mfolder-row.selected {
+    background: var(--bg-secondary, rgba(255, 255, 255, 0.09));
 }
 
 .mfolder-panel .mfolder-row.active {
@@ -198,6 +203,12 @@
     color: var(--text-primary, #eee);
 }
 
+.mfolder-panel .mfolder-action:disabled {
+    opacity: 0.35;
+    cursor: default;
+    background: none;
+}
+
 .mfolder-panel .mfolder-action.danger:hover {
     color: var(--danger-color, #e57373);
 }
@@ -270,6 +281,205 @@
 .memory-folder-create-modal .mfolder-modal-input:focus {
     outline: none;
     border-color: var(--accent-color, rgba(120, 180, 255, 0.6));
+}
+
+.memory-folder-create-modal .mfolder-modal-textarea {
+    resize: vertical;
+    min-height: 110px;
+    font-family: inherit;
+    line-height: 1.45;
+}
+
+.memory-folder-create-modal .mfolder-modal-check {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--text-primary, #eee);
+    cursor: pointer;
+}
+
+.memory-folder-create-modal .mfolder-modal-check input {
+    accent-color: var(--accent-color, #6ea8fe);
+}
+
+/* -- AI GENERATED CODE (Qwen3.8 Flash Next) :: (2026-10-27)
+   filesystem-style memory browser: folder tree as directory pane, memory
+   list for the selected folder below, clipboard bar for copy/cut + paste. */
+
+.mfolder-panel .mfolder-tree {
+    flex: 0 1 auto;
+    max-height: 42%;
+}
+
+.mfolder-panel .mfolder-browser {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap, 5px);
+    padding-top: 6px;
+    border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+}
+
+.mfolder-panel .mfolder-browse-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 4px;
+    min-width: 0;
+}
+
+.mfolder-panel .mfolder-browse-path {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary, #eee);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mfolder-panel .mfolder-browse-header .mfolder-count {
+    margin-left: auto;
+}
+
+.mfolder-panel .mfolder-filter {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+}
+
+.mfolder-panel .mfolder-filter-icon {
+    position: absolute;
+    left: 11px;
+    display: flex;
+    color: var(--text-secondary, #999);
+    pointer-events: none;
+}
+
+.mfolder-panel .mfolder-filter-icon svg {
+    width: 12px;
+    height: 12px;
+}
+
+.mfolder-panel .mfolder-filter-input {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 12px;
+    padding: 5px 8px 5px 28px;
+    border-radius: 7px;
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+    background: var(--bg-primary, rgba(0, 0, 0, 0.25));
+    color: var(--text-primary, #eee);
+}
+
+.mfolder-panel .mfolder-filter-input:focus {
+    outline: none;
+    border-color: var(--accent-color, rgba(120, 180, 255, 0.6));
+}
+
+.mfolder-panel .mfolder-clipbar {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 0 4px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px dashed var(--accent-color, rgba(120, 180, 255, 0.45));
+    background: var(--bg-secondary, rgba(255, 255, 255, 0.04));
+}
+
+.mfolder-panel .mfolder-clip-text {
+    font-size: 11px;
+    color: var(--text-secondary, #999);
+    word-break: break-word;
+}
+
+.mfolder-panel .mfolder-clip-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.mfolder-panel .mfolder-clip-actions .mfolder-modal-btn {
+    padding: 4px 10px;
+}
+
+.mfolder-panel .mfolder-mem-list {
+    flex: 1;
+    min-height: 0;
+    padding-right: 2px;
+}
+
+.mfolder-panel .mfolder-mem-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+    background: var(--bg-secondary, rgba(255, 255, 255, 0.03));
+    font-size: 12px;
+}
+
+.mfolder-panel .mfolder-mem-card:hover {
+    border-color: var(--border-color, rgba(255, 255, 255, 0.16));
+}
+
+.mfolder-panel .mfolder-mem-card.clipboard {
+    border-color: var(--accent-color, rgba(120, 180, 255, 0.55));
+    opacity: 0.75;
+}
+
+.mfolder-panel .mfolder-mem-top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+.mfolder-panel .mfolder-mem-date {
+    font-size: 10px;
+    color: var(--text-secondary, #999);
+    flex-shrink: 0;
+}
+
+.mfolder-panel .mfolder-mem-top .mfolder-actions {
+    margin-left: auto;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+}
+
+.mfolder-panel .mfolder-mem-card:hover .mfolder-actions,
+.mfolder-panel .mfolder-mem-card:focus-within .mfolder-actions {
+    opacity: 1;
+}
+
+.mfolder-panel .mfolder-mem-content {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-primary, #eee);
+    white-space: pre-wrap;
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.mfolder-panel .mfolder-mem-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.mfolder-panel .mfolder-tag {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: var(--bg-secondary, rgba(255, 255, 255, 0.08));
+    color: var(--text-secondary, #999);
 }
 
 .memory-folder-create-modal .mfolder-modal-actions {

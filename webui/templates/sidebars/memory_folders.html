@@ -5,6 +5,12 @@
 {# -- AI GENERATED CODE (Qwen3.8 Flash Next) :: (2026-10-24)
    memory folder sidebar tab: discovered via the sidebars/ convention.
    logic lives in assets/js/memory_folders.js (MEMORY_FOLDERS_PANEL global). #}
+
+{# -- AI GENERATED CODE (Qwen3.8 Flash Next) :: (2026-10-27)
+   revamped into a filesystem-style manager: the folder tree doubles as the
+   directory pane (click a folder to browse it, checkmark to activate it),
+   below it a memory browser for the selected folder with view/filter, edit,
+   delete and copy / cut / paste (move) actions. #}
 <div class="mfolder-panel" x-data="memoryFoldersComponent()" x-intersect.enter="refresh()">
 
     <div class="mfolder-header">
@@ -20,7 +26,8 @@
         <span class="mfolder-count" x-text="totalActive + ' memories'"></span>
     </div>
 
-    <div class="mfolder-list">
+    {# ---- folder tree (directory pane) ---- #}
+    <div class="mfolder-list mfolder-tree">
         <template x-if="loading && folders.length === 0">
             <div class="mfolder-empty">loading folders..</div>
         </template>
@@ -30,28 +37,126 @@
         </template>
 
         <template x-for="f in folders" :key="f.path">
-            <div class="mfolder-row" :class="{ active: f.active }" :style="indent(f)">
+            <div
+                class="mfolder-row"
+                :class="{ active: f.active, selected: f.path === selected }"
+                :style="indent(f)"
+                role="button"
+                tabindex="0"
+                :title="'Browse ' + f.path"
+                @click="select(f)"
+                @keydown.enter.prevent="select(f)"
+            >
                 <span class="mfolder-folder">{% include 'svg/folder.svg' %}</span>
                 <button
                     type="button"
                     class="mfolder-name"
-                    :title="'Activate ' + f.path"
-                    @click="activate(f.path)"
+                    :title="'Browse the memories in ' + f.path"
+                    @click.stop="select(f)"
                     x-text="f.name"
                 ></button>
                 <span class="mfolder-count" x-show="f.subtree !== f.own" x-text="'Σ ' + f.subtree" title="memories including sub-folders"></span>
                 <span class="mfolder-count" x-text="f.own" title="memories in this folder"></span>
                 <span class="mfolder-badge" x-show="f.active">active</span>
                 <div class="mfolder-actions">
-                    <button type="button" class="mfolder-action icon" title="New sub-folder inside this one" @click="openCreate(f)">
+                    <button type="button" class="mfolder-action icon" title="Set as active folder (its subtree becomes the AI's memory)" x-show="!f.active" @click.stop="activate(f.path)">
+                        {% include 'svg/checkmark.svg' %}
+                    </button>
+                    <button type="button" class="mfolder-action icon" title="New sub-folder inside this one" @click.stop="openCreate(f)">
                         {% include 'svg/add.svg' %}
                     </button>
-                    <button type="button" class="mfolder-action icon danger" title="Delete this folder and its sub-folders" x-show="f.path !== 'root'" @click="remove(f)">
+                    <button type="button" class="mfolder-action icon" title="Paste the clipboard memory into this folder" x-show="clipboard" :disabled="!canPasteInto(f.path)" @click.stop="pasteInto(f.path)">
+                        {% include 'svg/clipboard.svg' %}
+                    </button>
+                    <button type="button" class="mfolder-action icon danger" title="Delete this folder and its sub-folders" x-show="f.path !== 'root'" @click.stop="remove(f)">
                         {% include 'svg/trash.svg' %}
                     </button>
                 </div>
             </div>
         </template>
+    </div>
+
+    {# ---- memory browser (contents of the selected folder) ---- #}
+    <div class="mfolder-browser">
+        <div class="mfolder-browse-header">
+            <span class="mfolder-folder">{% include 'svg/folder.svg' %}</span>
+            <span class="mfolder-browse-path" :title="selected" x-text="selected || 'no folder selected'"></span>
+            <span class="mfolder-count" x-show="selected" x-text="memTotal + (memTotal === 1 ? ' memory' : ' memories')"></span>
+        </div>
+
+        <div class="mfolder-filter" x-show="selected">
+            <span class="mfolder-filter-icon">{% include 'svg/search.svg' %}</span>
+            <input
+                type="search"
+                class="mfolder-filter-input"
+                placeholder="filter in this folder.."
+                aria-label="Filter the memories in the selected folder"
+                x-model="memFilter"
+            >
+        </div>
+
+        <div class="mfolder-clipbar" x-show="clipboard">
+            <span
+                class="mfolder-clip-text"
+                x-text="clipboard ? (clipboard.mode === 'move' ? '1 memory cut from ' : '1 memory copied from ') + clipboard.from : ''"
+            ></span>
+            <div class="mfolder-clip-actions">
+                <button
+                    type="button"
+                    class="mfolder-modal-btn primary"
+                    :disabled="!canPasteInto(selected)"
+                    @click="pasteInto(selected)"
+                >paste here</button>
+                <button type="button" class="mfolder-modal-btn" @click="clearClipboard()">cancel</button>
+            </div>
+        </div>
+
+        <div class="mfolder-list mfolder-mem-list">
+            <template x-if="!selected">
+                <div class="mfolder-empty">select a folder above to browse its memories</div>
+            </template>
+
+            <template x-if="selected && memLoading">
+                <div class="mfolder-empty">loading memories..</div>
+            </template>
+
+            <template x-if="selected && !memLoading && memTotal === 0">
+                <div class="mfolder-empty">this folder has no memories yet</div>
+            </template>
+
+            <template x-if="selected && !memLoading && memTotal > 0 && visibleMemories().length === 0">
+                <div class="mfolder-empty">no memories in this folder match the filter</div>
+            </template>
+
+            <template x-for="item in visibleMemories()" :key="item.id">
+                <article class="mfolder-mem-card" :class="{ clipboard: isOnClipboard(item) }">
+                    <div class="mfolder-mem-top">
+                        <span class="mfolder-mem-date" x-text="formatDate(item.date_created)"></span>
+                        <span class="mfolder-badge" x-show="item.pinned">pinned</span>
+                        <div class="mfolder-actions">
+                            <button type="button" class="mfolder-action icon" title="Edit this memory" aria-label="Edit this memory" @click="openEdit(item)">
+                                {% include 'svg/pencil.svg' %}
+                            </button>
+                            <button type="button" class="mfolder-action icon" title="Copy this memory (paste it into another folder)" aria-label="Copy this memory" @click="copyMemory(item)">
+                                {% include 'svg/copy.svg' %}
+                            </button>
+                            <button type="button" class="mfolder-action icon" title="Cut this memory (move it to another folder on paste)" aria-label="Cut this memory" @click="cutMemory(item)">
+                                {% include 'svg/clipboard.svg' %}
+                            </button>
+                            <button type="button" class="mfolder-action icon danger" title="Delete this memory" aria-label="Delete this memory" @click="removeMemory(item)">
+                                {% include 'svg/trash.svg' %}
+                            </button>
+                        </div>
+                    </div>
+                    <p class="mfolder-mem-content" x-text="item.content"></p>
+                    <div class="mfolder-mem-tags" x-show="item.tags && item.tags.length">
+                        <template x-for="tag in item.tags" :key="tag">
+                            <span class="mfolder-tag" x-text="tag"></span>
+                        </template>
+                    </div>
+                </article>
+            </template>
+        </div>
     </div>
 
     <div class="mfolder-footer notice" x-show="notice" x-text="notice"></div>

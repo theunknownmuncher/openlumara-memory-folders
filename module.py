@@ -19,9 +19,11 @@
 # -- AI GENERATED CODE (Qwen3.8 Flash Next) :: (2026-10-24)
 import core
 import channels.webui.api as webui
+import datetime
 import os
 import re
 import shutil
+import ulid
 
 ROOT_FOLDER = "root"
 FOLDER_FILE = "memory.mp"  # matches StorageList("memory", type="msgpack") used by the memory module
@@ -425,6 +427,204 @@ class MemoryFolders(core.module.Module):
         if not path:
             return self.result("no memory folder path given", success=False)
         return await self.delete_folder(path, force=bool(body.get("force")))
+
+    # -- AI GENERATED CODE (Qwen3.8 Flash Next) :: (2026-10-27)
+    # folder-scoped memory management for the webui panel: browse a folder's
+    # own memories and edit / delete / copy / paste / move them, filesystem
+    # style. These routes talk to the folder's own memory file directly, so
+    # they also reach folders outside the currently active subtree; after any
+    # write they refresh the memory module's view so the two never disagree.
+
+    def _ui_mem_item(self, mem):
+        """compact JSON shape used by the sidebar memory browser"""
+        return {
+            "id": mem.get("id"),
+            "content": mem.get("content", ""),
+            "tags": mem.get("tags", []) or [],
+            "pinned": bool(mem.get("pinned")),
+            "date_created": mem.get("date_created", ""),
+        }
+
+    def _folder_list(self, path):
+        """resolve a folder path to (relative path, StorageList of its own memories); raises ValueError"""
+        parts = self._parse_path(path)
+        folder_dir = self._folder_dir(parts)
+        if not self._is_folder(folder_dir):
+            raise ValueError(f"memory folder '{'/'.join(parts)}' doesn't exist — use list_folders to see the tree")
+
+        backend = core.storage.StorageList("memory", type="msgpack", path=folder_dir, autoload=False)
+        if not core.storage.TEMPORARY:
+            backend.load()
+        return "/".join(parts), backend
+
+    def _folder_index(self, backend, mem_id):
+        """index of a memory by id inside a folder's StorageList, -1 when absent"""
+        for index, mem in enumerate(backend):
+            if isinstance(mem, dict) and str(mem.get("id")) == str(mem_id).strip():
+                return index
+        return -1
+
+    @webui.route("memories")
+    async def _route_memories(self, body=None, query=None):
+        """one folder's own memories, newest first (directory listing for the sidebar browser)"""
+        self._setup()
+        query = query or {}
+
+        try:
+            rel, backend = self._folder_list(query.get("path", ""))
+        except ValueError as e:
+            return self.result(str(e), success=False)
+
+        limit = 200
+        try:
+            limit = int(query.get("limit", 200) or 200)
+        except ValueError:
+            limit = 200
+        limit = max(1, min(limit, 500))
+
+        entries = [mem for mem in backend if isinstance(mem, dict)]
+        items = [self._ui_mem_item(mem) for mem in reversed(entries[-limit:])]
+        return {"path": rel, "total": len(entries), "items": items}
+
+    @webui.route("update_memory", method="POST")
+    async def _route_update_memory(self, body=None, query=None):
+        """edit a memory stored in a specific folder"""
+        self._setup()
+        body = body or {}
+        if core.storage.TEMPORARY:
+            return self.result("memory edits are disabled while running in temporary mode", success=False)
+
+        mem_id = str(body.get("id", "")).strip()
+        if not mem_id:
+            return self.result("no memory id given", success=False)
+
+        content = body.get("content")
+        if content is None or not str(content).strip():
+            return self.result("memory content cannot be empty", success=False)
+
+        tags = body.get("tags", [])
+        if not isinstance(tags, list):
+            tags = []
+
+        try:
+            rel, backend = self._folder_list(body.get("path", ""))
+        except ValueError as e:
+            return self.result(str(e), success=False)
+
+        index = self._folder_index(backend, mem_id)
+        if index == -1:
+            return self.result(f"memory {mem_id} is not in folder '{rel}'", success=False)
+
+        backend[index]["content"] = str(content).strip()
+        backend[index]["tags"] = [str(tag).strip() for tag in tags if str(tag).strip()]
+        if "pinned" in body:
+            backend[index]["pinned"] = bool(body.get("pinned"))
+        backend.save()
+
+        self._refresh()
+        return self.result(f"memory {mem_id} edited in '{rel}'")
+
+    @webui.route("delete_memory", method="POST")
+    async def _route_delete_memory(self, body=None, query=None):
+        """delete a memory from a specific folder (a copy goes to the memory module's global trash, like memory_delete does)"""
+        self._setup()
+        body = body or {}
+        if core.storage.TEMPORARY:
+            return self.result("memory deletion is disabled while running in temporary mode", success=False)
+
+        mem_id = str(body.get("id", "")).strip()
+        if not mem_id:
+            return self.result("no memory id given", success=False)
+
+        try:
+            rel, backend = self._folder_list(body.get("path", ""))
+        except ValueError as e:
+            return self.result(str(e), success=False)
+
+        index = self._folder_index(backend, mem_id)
+        if index == -1:
+            return self.result(f"memory {mem_id} is not in folder '{rel}'", success=False)
+
+        mem = backend[index]
+
+        mem_module = self.manager.modules.get("memory") if self.manager else None
+        trash = getattr(mem_module, "_mem_deleted", None)
+        if isinstance(mem, dict) and trash is not None:
+            trash.append(mem)
+            trash.save()
+
+        backend.pop(index)
+        backend.save()
+
+        self._refresh()
+        return self.result(f"memory {mem_id} deleted from '{rel}'")
+
+    @webui.route("copy_memory", method="POST")
+    async def _route_copy_memory(self, body=None, query=None):
+        """duplicate a memory from one folder into another one (the copy gets a fresh id)"""
+        self._setup()
+        body = body or {}
+        if core.storage.TEMPORARY:
+            return self.result("memory writes are disabled while running in temporary mode", success=False)
+
+        mem_id = str(body.get("id", "")).strip()
+        if not mem_id:
+            return self.result("no memory id given", success=False)
+
+        try:
+            src_rel, src = self._folder_list(body.get("from", ""))
+            dst_rel, dst = self._folder_list(body.get("to", ""))
+        except ValueError as e:
+            return self.result(str(e), success=False)
+
+        index = self._folder_index(src, mem_id)
+        if index == -1:
+            return self.result(f"memory {mem_id} is not in folder '{src_rel}'", success=False)
+
+        new_mem = dict(src[index])
+        new_mem["id"] = str(ulid.ULID())
+        new_mem["tags"] = list(new_mem.get("tags") or [])
+        new_mem["date_created"] = datetime.datetime.now().isoformat()
+
+        dst.append(new_mem)
+        dst.save()
+
+        self._refresh()
+        return self.result(f"copied memory into '{dst_rel}' (new id {new_mem['id']})")
+
+    @webui.route("move_memory", method="POST")
+    async def _route_move_memory(self, body=None, query=None):
+        """move a memory from one folder to another (keeps its id, content, tags and pinned state)"""
+        self._setup()
+        body = body or {}
+        if core.storage.TEMPORARY:
+            return self.result("memory writes are disabled while running in temporary mode", success=False)
+
+        mem_id = str(body.get("id", "")).strip()
+        if not mem_id:
+            return self.result("no memory id given", success=False)
+
+        try:
+            src_rel, src = self._folder_list(body.get("from", ""))
+            dst_rel, dst = self._folder_list(body.get("to", ""))
+        except ValueError as e:
+            return self.result(str(e), success=False)
+
+        if src_rel == dst_rel:
+            return self.result(f"memory {mem_id} is already in '{src_rel}'")
+
+        index = self._folder_index(src, mem_id)
+        if index == -1:
+            return self.result(f"memory {mem_id} is not in folder '{src_rel}'", success=False)
+
+        mem = src.pop(index)
+        src.save()
+
+        dst.append(mem)
+        dst.save()
+
+        self._refresh()
+        return self.result(f"moved memory {mem_id} from '{src_rel}' to '{dst_rel}'")
 
     # -------------------------
     #   USER-FACING COMMANDS
